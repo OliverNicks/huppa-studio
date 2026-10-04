@@ -1,0 +1,18 @@
+services:
+  huppa-studio:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: huppa-studio
+    restart: unless-stopped
+    ports:
+      - "8501:8501"
+    env_file:
+      - .env
+    volumes:
+      # Mount data folder for persistent cache, backups, and uploaded sheets
+      - ./data:/app/data
+      # Mount output folder to easily access generated SQL / CSV patches
+      - ./output:/app/output
+      # Optional: uncomment if local images directory should be mounted inside container
+      # - ./opencart_images:/app/opencart_images:ro

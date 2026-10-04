@@ -153,7 +153,21 @@ pip install -r requirements.txt
 Double-click `start_app.bat`.  
 On a fresh Windows machine without Python, the script will automatically download official Python 3.11, set up the virtual environment, install requirements, and open the Streamlit interface in your browser.
 
-### Option B: Manual Command Line
+### Option B: Docker & Docker Compose (Recommended for isolated deployment)
+Ensure Docker is installed and running, then:
+```bash
+# Build and start container in background
+docker compose up -d
+
+# View logs
+docker compose logs -f
+
+# Stop container
+docker compose down
+```
+Open `http://localhost:8501` in your browser. Data and outputs are mounted to `./data` and `./output` on the host machine.
+
+### Option C: Manual Command Line
 Activate your virtual environment and start Streamlit:
 ```bash
 streamlit run app.py

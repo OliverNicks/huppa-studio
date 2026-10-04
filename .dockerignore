@@ -1,0 +1,35 @@
+# Git & VCS
+.git
+.gitignore
+
+# Secrets and environment configurations
+.env
+.env.*
+!.env.example
+
+# Python caches and virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+ENV/
+
+# Heavy media assets & archives
+opencart_images/
+*.zip
+output/
+
+# Backups and temporary files
+data/cache_backups/
+data/temp_*
+data/* - Copy*
+failed_images.txt
+.shifted_manifest.json
+
+# IDEs & OS metadata
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
