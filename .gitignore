@@ -1,0 +1,35 @@
+# Environment variables and secrets (NEVER commit real API keys or passwords)
+.env
+.env.*
+!.env.example
+first_try/.env
+
+# Heavy media assets (6 GB local images directory)
+opencart_images/
+
+# Python environments and byte-code
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+ENV/
+
+# Output directories & archives
+output/
+*.zip
+
+# Temporary data and prototypes
+first_try/
+extra/
+failed_images.txt
+.shifted_manifest.json
+data/temp_*
+data/* - Copy*
+data/cache_backups/
+data/failed_images.txt
+
+# IDE configuration
+.vscode/
+.idea/
