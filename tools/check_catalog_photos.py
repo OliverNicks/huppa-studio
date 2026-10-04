@@ -1,6 +1,13 @@
+import os
+import sys
 import re
 import pandas as pd
 from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+os.chdir(PROJECT_ROOT)
 
 def audit_catalog_photos(file_path: str = "data/huppa.xlsx"):
     path = Path(file_path)

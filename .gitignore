@@ -22,7 +22,9 @@ output/
 
 # Temporary data and prototypes
 first_try/
-extra/
+extra/*.jsonl
+extra/failed_images.txt
+extra/.shifted_manifest.json
 failed_images.txt
 .shifted_manifest.json
 data/temp_*

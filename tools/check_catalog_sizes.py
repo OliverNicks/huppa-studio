@@ -1,6 +1,13 @@
+import os
+import sys
 import json
 from pathlib import Path
 import pandas as pd
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+os.chdir(PROJECT_ROOT)
 
 # The exact sizes currently existing in Mirohost DB for 'Размер'
 DB_EXISTING_SIZES = {

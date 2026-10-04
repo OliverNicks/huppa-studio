@@ -9,6 +9,11 @@ from typing import Dict, List, Tuple, Set, Optional
 import pandas as pd
 import requests
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+os.chdir(PROJECT_ROOT)
+
 # Directory with downloaded images
 IMAGES_DIR = Path("./opencart_images")
 OUTPUT_DIR = Path("./output")

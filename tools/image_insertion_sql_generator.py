@@ -1,5 +1,12 @@
 import os
+import sys
+from pathlib import Path
 import pandas as pd
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+os.chdir(PROJECT_ROOT)
 
 def generate_image_sync_sql(excel_path: str, local_images_dir: str, output_sql_path: str = "update_images.sql"):
     if not os.path.exists(excel_path):

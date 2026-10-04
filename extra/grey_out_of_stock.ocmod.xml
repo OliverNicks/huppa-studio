@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+    <name>Huppa NewStore Grey Out of Stock Products</name>
+    <code>huppa_newstore_grey_out_of_stock</code>
+    <version>1.1</version>
+    <author>Huppa Pipeline</author>
+    <link>https://huppa.com.ua</link>
+
+    <!-- 1. Контроллер категории -->
+    <file path="catalog/controller/product/category.php">
+        <operation error="log">
+            <search><![CDATA[$data['products'][] = array(]]></search>
+            <add position="after"><![CDATA[
+					'quantity'    => (int)$result['quantity'],
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- 2. Контроллер поиска -->
+    <file path="catalog/controller/product/search.php">
+        <operation error="log">
+            <search><![CDATA[$data['products'][] = array(]]></search>
+            <add position="after"><![CDATA[
+					'quantity'    => (int)$result['quantity'],
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- 3. Контроллер акций -->
+    <file path="catalog/controller/product/special.php">
+        <operation error="log">
+            <search><![CDATA[$data['products'][] = array(]]></search>
+            <add position="after"><![CDATA[
+					'quantity'    => (int)$result['quantity'],
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- 4. Контроллер производителей/брендов -->
+    <file path="catalog/controller/product/manufacturer.php">
+        <operation error="log">
+            <search><![CDATA[$data['products'][] = array(]]></search>
+            <add position="after"><![CDATA[
+					'quantity'    => (int)$result['quantity'],
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- 5. Шаблон категории NewStore -->
+    <file path="catalog/view/theme/newstore/template/product/category.tpl">
+        <operation error="log">
+            <search><![CDATA[<div class="product-thumb]]></search>
+            <add position="replace"><![CDATA[<div class="product-thumb <?php echo (isset($product['quantity']) && (int)$product['quantity'] <= 0) ? 'out-of-stock' : ''; ?>" data-qty="<?php echo isset($product['quantity']) ? $product['quantity'] : 'not_set'; ?>"]]></add>
+        </operation>
+    </file>
+
+    <!-- 6. Стили в header.tpl -->
+    <file path="catalog/view/theme/newstore/template/common/header.tpl">
+        <operation error="log">
+            <search><![CDATA[</head>]]></search>
+            <add position="before"><![CDATA[
+<style>
+/* Затемнение товаров не в наличии */
+.product-thumb.out-of-stock {
+    background-color: #f2f2f2 !important;
+    opacity: 0.6 !important;
+    transition: all 0.3s ease;
+    border: 1px solid #ddd !important;
+}
+.product-thumb.out-of-stock:hover {
+    opacity: 0.85 !important;
+}
+.product-thumb.out-of-stock .image img {
+    filter: grayscale(90%) !important;
+}
+.product-thumb.out-of-stock .price {
+    color: #999 !important;
+}
+.product-thumb.out-of-stock .btn-general {
+    background: #bbb !important;
+    border-color: #aaa !important;
+    color: #fff !important;
+}
+</style>
+            ]]></add>
+        </operation>
+    </file>
+</modification>

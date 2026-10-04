@@ -1,7 +1,14 @@
+import os
+import sys
 import re
 from collections import Counter
 from pathlib import Path
 import pandas as pd
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+os.chdir(PROJECT_ROOT)
 
 # The 18 colors currently in Mirohost DB for 'Цвет'
 DB_EXISTING_COLORS = {
