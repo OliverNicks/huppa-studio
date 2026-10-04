@@ -131,6 +131,7 @@ echo [OK] Environment setup complete!
 
 :VENV_READY
 call "venv\Scripts\activate.bat"
+python -m pip install -r requirements.txt --quiet
 
 echo.
 echo ======================================================================
