@@ -62,6 +62,7 @@ if not exist "%TEMP%\py_installer.exe" (
     echo.
     echo [ERROR] Failed to download Python. Check your internet connection.
     echo Or install Python manually from: https://www.python.org/downloads/
+    echo.
     pause
     exit /b 1
 )
@@ -87,6 +88,7 @@ if not errorlevel 1 (
 echo.
 echo [ERROR] Python installation finished, but python.exe was not detected.
 echo Please restart your PC or install Python from https://www.python.org/downloads/
+echo.
 pause
 exit /b 1
 
@@ -94,7 +96,14 @@ exit /b 1
 echo [OK] Using Python: %PY_CMD%
 
 :: 3. Setup Virtual Environment
-if exist "venv\Scripts\python.exe" goto :VENV_READY
+:: Check if streamlit executable exists (guarantees previous install was not interrupted)
+if exist "venv\Scripts\streamlit.exe" goto :VENV_READY
+
+if exist "venv" (
+    echo.
+    echo [!] Previous install was interrupted. Cleaning up incomplete venv...
+    rmdir /s /q "venv" >nul 2>&1
+)
 
 echo.
 echo [1/2] Creating local environment (venv)...
@@ -102,17 +111,19 @@ echo [1/2] Creating local environment (venv)...
 if errorlevel 1 (
     echo.
     echo [ERROR] Failed to create virtual environment.
+    echo.
     pause
     exit /b 1
 )
 
-echo [2/2] Installing required libraries (first launch only)...
+echo [2/2] Installing required libraries (this may take 1-2 minutes)...
 call "venv\Scripts\activate.bat"
 python -m pip install --upgrade pip --quiet
-pip install -r requirements.txt --quiet
+pip install -r requirements.txt
 if errorlevel 1 (
     echo.
     echo [ERROR] Failed to install packages. Check internet connection.
+    echo.
     pause
     exit /b 1
 )
@@ -128,8 +139,10 @@ echo ======================================================================
 echo.
 
 streamlit run app.py --server.headless=false
-if errorlevel 1 (
-    echo.
-    echo Application stopped.
-    pause
-)
+
+echo.
+echo ======================================================================
+echo  Application finished.
+echo ======================================================================
+echo.
+pause
