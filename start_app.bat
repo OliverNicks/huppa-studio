@@ -1,78 +1,135 @@
 @echo off
-chcp 65001 >nul
 title Huppa OpenCart Studio
 cd /d "%~dp0"
 
 echo ======================================================================
-echo              🛍️ HUPPA OPENCART STUDIO — ЗАПУСК
+echo              HUPPA OPENCART STUDIO - START
 echo ======================================================================
 echo.
 
-:: 1. Check if Python is installed on the system
-set "PY_CMD="
-python --version >nul 2>&1 && set "PY_CMD=python"
-if not defined PY_CMD (
-    if exist "%LOCALAPPDATA%\Programs\Python\Python311\python.exe" (
-        set "PY_CMD=%LOCALAPPDATA%\Programs\Python\Python311\python.exe"
-        set "PATH=%LOCALAPPDATA%\Programs\Python\Python311;%LOCALAPPDATA%\Programs\Python\Python311\Scripts;%PATH%"
-    ) else if exist "%LOCALAPPDATA%\Programs\Python\Python312\python.exe" (
-        set "PY_CMD=%LOCALAPPDATA%\Programs\Python\Python312\python.exe"
-        set "PATH=%LOCALAPPDATA%\Programs\Python\Python312;%LOCALAPPDATA%\Programs\Python\Python312\Scripts;%PATH%"
-    )
+:: 1. Search for Python
+set PY_CMD=
+
+python --version >nul 2>&1
+if not errorlevel 1 (
+    set PY_CMD=python
+    goto :PYTHON_READY
 )
 
-:: If Python is still not found, download and install it automatically!
-if not defined PY_CMD (
-    echo [1/3] Python не знайдено на комп'ютері.
-    echo       Завантажуємо офіційний Python автоматично, зачекайте...
-    powershell -NoProfile -ExecutionPolicy Bypass -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; (New-Object System.Net.WebClient).DownloadFile('https://www.python.org/ftp/python/3.11.9/python-3.11.9-amd64.exe', '$env:TEMP\python_installer.exe')"
-    
-    echo [2/3] Автоматичне встановлення Python (це займе близько 1 хвилини)...
-    start /wait "" "%TEMP%\python_installer.exe" /quiet InstallAllUsers=0 PrependPath=1 Include_test=0
-    del /f /q "%TEMP%\python_installer.exe" >nul 2>&1
-
-    if exist "%LOCALAPPDATA%\Programs\Python\Python311\python.exe" (
-        set "PY_CMD=%LOCALAPPDATA%\Programs\Python\Python311\python.exe"
-        set "PATH=%LOCALAPPDATA%\Programs\Python\Python311;%LOCALAPPDATA%\Programs\Python\Python311\Scripts;%PATH%"
-    ) else (
-        python --version >nul 2>&1 && set "PY_CMD=python"
-    )
+py -3 --version >nul 2>&1
+if not errorlevel 1 (
+    set PY_CMD=py -3
+    goto :PYTHON_READY
 )
 
-if not defined PY_CMD (
-    echo [ПОМИЛКА] Не вдалося автоматично налаштувати Python.
-    echo Будь ласка, завантажте його вручну з: https://www.python.org/downloads/
+if exist "%LOCALAPPDATA%\Programs\Python\Python311\python.exe" (
+    set "PY_CMD=%LOCALAPPDATA%\Programs\Python\Python311\python.exe"
+    goto :PYTHON_READY
+)
+
+if exist "%LOCALAPPDATA%\Programs\Python\Python312\python.exe" (
+    set "PY_CMD=%LOCALAPPDATA%\Programs\Python\Python312\python.exe"
+    goto :PYTHON_READY
+)
+
+if exist "C:\Python311\python.exe" (
+    set "PY_CMD=C:\Python311\python.exe"
+    goto :PYTHON_READY
+)
+
+if exist "C:\Python312\python.exe" (
+    set "PY_CMD=C:\Python312\python.exe"
+    goto :PYTHON_READY
+)
+
+if exist "%USERPROFILE%\miniconda3\python.exe" (
+    set "PY_CMD=%USERPROFILE%\miniconda3\python.exe"
+    goto :PYTHON_READY
+)
+
+if exist "%USERPROFILE%\anaconda3\python.exe" (
+    set "PY_CMD=%USERPROFILE%\anaconda3\python.exe"
+    goto :PYTHON_READY
+)
+
+:: 2. Auto-download and install Python
+echo [1/3] Python is not installed on this PC.
+echo       Downloading official Python 3.11 installer, please wait...
+
+powershell -NoProfile -ExecutionPolicy Bypass -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri 'https://www.python.org/ftp/python/3.11.9/python-3.11.9-amd64.exe' -OutFile '%TEMP%\py_installer.exe' -UseBasicParsing"
+
+if not exist "%TEMP%\py_installer.exe" (
+    echo.
+    echo [ERROR] Failed to download Python. Check your internet connection.
+    echo Or install Python manually from: https://www.python.org/downloads/
     pause
     exit /b 1
 )
 
-:: 2. Check and initialize Virtual Environment
-if not exist "venv\" (
-    echo [1/2] Створення локального середовища програми (venv)...
-    "%PY_CMD%" -m venv venv
-    if %ERRORLEVEL% NEQ 0 (
-        echo [ПОМИЛКА] Не вдалося створити віртуальне оточення.
-        pause
-        exit /b 1
-    )
-    echo [2/2] Встановлення необхідних бібліотек (лише при першому запуску)...
-    call venv\Scripts\activate.bat
-    python -m pip install --upgrade pip --quiet
-    pip install -r requirements.txt --quiet
-    if %ERRORLEVEL% NEQ 0 (
-        echo [ПОМИЛКА] Помилка встановлення бібліотек. Перевірте з'єднання з інтернетом.
-        pause
-        exit /b 1
-    )
-) else (
-    call venv\Scripts\activate.bat
+echo [2/3] Installing Python (approx. 1-2 minutes)...
+start /wait "" "%TEMP%\py_installer.exe" /quiet InstallAllUsers=0 PrependPath=1 Include_test=0
+del /f /q "%TEMP%\py_installer.exe" >nul 2>&1
+
+:: Refresh environment path
+set "PATH=%LOCALAPPDATA%\Programs\Python\Python311;%LOCALAPPDATA%\Programs\Python\Python311\Scripts;%PATH%"
+
+if exist "%LOCALAPPDATA%\Programs\Python\Python311\python.exe" (
+    set "PY_CMD=%LOCALAPPDATA%\Programs\Python\Python311\python.exe"
+    goto :PYTHON_READY
 )
 
-:: 3. Launch Streamlit Dashboard
+python --version >nul 2>&1
+if not errorlevel 1 (
+    set PY_CMD=python
+    goto :PYTHON_READY
+)
+
 echo.
-echo ======================================================================
-echo  🚀 Запуск Huppa Studio... Вікно відкриється у вашому браузері!
-echo ======================================================================
-echo.
-streamlit run app.py --server.headless=false
+echo [ERROR] Python installation finished, but python.exe was not detected.
+echo Please restart your PC or install Python from https://www.python.org/downloads/
 pause
+exit /b 1
+
+:PYTHON_READY
+echo [OK] Using Python: %PY_CMD%
+
+:: 3. Setup Virtual Environment
+if exist "venv\Scripts\python.exe" goto :VENV_READY
+
+echo.
+echo [1/2] Creating local environment (venv)...
+"%PY_CMD%" -m venv venv
+if errorlevel 1 (
+    echo.
+    echo [ERROR] Failed to create virtual environment.
+    pause
+    exit /b 1
+)
+
+echo [2/2] Installing required libraries (first launch only)...
+call "venv\Scripts\activate.bat"
+python -m pip install --upgrade pip --quiet
+pip install -r requirements.txt --quiet
+if errorlevel 1 (
+    echo.
+    echo [ERROR] Failed to install packages. Check internet connection.
+    pause
+    exit /b 1
+)
+echo [OK] Environment setup complete!
+
+:VENV_READY
+call "venv\Scripts\activate.bat"
+
+echo.
+echo ======================================================================
+echo  Launching Huppa Studio... Your browser will open shortly!
+echo ======================================================================
+echo.
+
+streamlit run app.py --server.headless=false
+if errorlevel 1 (
+    echo.
+    echo Application stopped.
+    pause
+)
